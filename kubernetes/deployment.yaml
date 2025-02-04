@@ -1,40 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: busybox
-  namespace: default
-  labels:
-    app: busybox
+  name: demo
 spec:
   selector:
     matchLabels:
-      app: busybox
-  replicas: 2
+      app: demo
   template:
     metadata:
-      annotations:
-        kubectl.kubernetes.io/default-container: busybox
       labels:
-        app: busybox
+        app: demo
     spec:
+      volumes:
+        - name: configmap-volume
+          configMap:
+            name: demo-configmap
+        - name: pvc-volume
+          persistentVolumeClaim:
+            claimName: pvc-dynamic
       containers:
-        - name: busybox
-          image: busybox:latest
+        - name: demo
+          image: devopsjourney1/mywebapp:latest
+          envFrom:
+            - secretRef:
+                name: demo-secret
           ports:
             - containerPort: 80
-              name: busybox
-      restartPolicy: Always
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mongo-express-service
-spec:
-  selector:
-    app: mongo-express
-  type: LoadBalancer
-  ports:
-    - protocol: TCP
-      port: 8081
-      targetPort: 8081
-      nodePort: 30001
+          resources:
+            requests:
+              memory: "16Mi"
+              cpu: 500m
+          volumeMounts:
+            - name: configmap-volume
+              mountPath: /data/message.txt
+              subPath: message.txt
+            - name: pvc-volume
+              mountPath: "/data"
