@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: HorizontalPodAutoScaler
+metadata:
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: busybox
+      namespace: default
+      labels:
+        app: busybox
+    spec:
+      selector:
+        matchLabels:
+          app: busybox
+      replicas: 2
+      template:
+        metadata:
+          annotations:
+            kubectl.kubernetes.io/default-container: busybox
+          labels:
+            app: busybox
+        spec:
+          containers:
+            - name: busybox
+              image: busybox:latest
+              ports:
+                - containerPort: 80
+                  name: busybox
+          restartPolicy: Always

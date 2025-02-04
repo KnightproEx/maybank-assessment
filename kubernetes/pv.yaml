@@ -1,0 +1,75 @@
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: demo-pv
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   capacity:
+#     storage: 1Gi
+#   storageClassName: standard
+#   hostPath:
+#     path: /tmp/demo-pv
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-service-efs
+  # No namespace, PVs are global
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 1Mi
+  mountOptions:
+    - rsize=1048576
+    - wsize=1048576
+    - hard
+    - timeo=600
+    - retrans=2
+    - noresvport
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /
+  claimRef:
+    name: my-service-efs
+    namespace: my-service
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-service-efs
+  namespace: my-service
+spec:
+  storageClassName: ""
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Mi
+---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: my-service-web-deployment
+#   namespace: my-service
+# spec:
+#   replicas: 1
+#   template:
+#     spec:
+#       containers:
+#         - name: my-service-web
+#           image: <path to your Docker image>
+#           resources:
+#             limits:
+#               cpu: 500m
+#               memory: 1024Mi
+#             requests:
+#               cpu: 100m
+#               memory: 150Mi
+#           volumeMounts:
+#             - name: efs
+#               mountPath: "/data"
+#       volumes:
+#         - name: efs
+#           persistentVolumeClaim:
+#             claimName: my-service-efs
