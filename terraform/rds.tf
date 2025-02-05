@@ -1,6 +1,6 @@
 resource "aws_db_subnet_group" "db_subnet_group" {
   name       = "my-db-subnet-group"
-  subnet_ids = [for subnet in module.vpc.private_subnets : subnet.id]
+  subnet_ids = [for subnet in module.vpc.private_subnets : subnet]
 }
 
 resource "aws_db_instance" "mariadb" {

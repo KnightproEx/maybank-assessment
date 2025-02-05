@@ -23,14 +23,8 @@ module "vpc" {
   }
 }
 
-resource "aws_vpc_endpoint" "ec2" {
-  vpc_id            = aws_vpc.main.id
+resource "aws_vpc_endpoint" "vpc_endpoint" {
+  vpc_id            = module.vpc.vpc_id
   service_name      = "com.amazonaws.asia-southeast-1.ec2"
   vpc_endpoint_type = "Interface"
-
-  security_group_ids = [
-    aws_security_group.sg1.id,
-  ]
-
-  private_dns_enabled = true
 }

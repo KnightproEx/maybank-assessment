@@ -13,3 +13,8 @@ variable "db_password" {
   type    = string
   default = "12345"
 }
+
+variable "ami" {
+  type    = string
+  default = ""
+}
